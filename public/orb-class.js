@@ -18,7 +18,7 @@ class Orb extends Phaser.GameObjects.Image {
   update(time, delta) {
     if (this.alpha < 1) this.alpha += 0.1;
     this.y += this.ySpeed * delta;
-    this.ySpeed *= 1.03;
+    this.ySpeed *= 1.02;
     this.born += delta;
     if (this.y > 600) {
       this.setActive(false);
