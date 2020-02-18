@@ -6,6 +6,11 @@ const path = require("path");
 app.use(express.static("public"));
 
 app.get("/game", (req, res) => {
+  const { mobile } = req.query;
+  if (mobile === "true") {
+    res.send("MOB VERSION");
+    return;
+  }
   res.sendFile(path.join(__dirname, "index.html"));
 });
 

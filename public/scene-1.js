@@ -1,37 +1,45 @@
 class Scene1 extends Phaser.Scene {
   constructor() {
-    super("scene1");
+    super({ key: "Scene-1" });
+    this.score = 0;
   }
 
   preload() {
-    this.load.image("orb-1", "assets/orb-1.png");
+    this.load.image("orb-1", "assets/orb-1-small.png");
     this.load.image("bomb", "assets/bomb-1.png");
-    this.load.image("hand", "assets/hand.png");
+    this.load.image("hand", "assets/hand-small.png");
     this.load.image("fire", "assets/fire.png");
   }
   create() {
-    this.physics.world.setBounds(0, 0, 400, 600);
+    // this.physics.world.setBounds(0, 0, 400, 600);
+    this.displayTop = document.querySelector(".display-top");
+    this.displayMiddle = document.querySelector(".display-middle");
+    this.hand = this.physics.add.image(200, 500, "hand");
+    this.hand.body.immovable = true;
+    this.hand.body.moves = false;
+    this.hand.allowGravity = false;
 
     this.orbs = this.physics.add.group({
       classType: Orb,
-      runChildUpdate: true
+      collideWorldBounds: true,
+      velocityY: 500
     });
 
     this.bombs = this.physics.add.group({
-      classType: Bomb,
-      runChildUpdate: true
+      classType: Bomb
     });
 
-    this.hand = this.physics.add.image(200, 500, "hand");
-    this.hand.setScale(0.5);
-    this.hand.body.velocity.setTo(0, 0);
-    this.hand.body.gravity.set(0, 0);
+    this.physics.add.collider(
+      this.hand,
+      this.orbs,
+      this.handleCollision.bind(this)
+    );
 
-    // this.physics.add.collider(this.orbs, this.hand, e => console.log(e));
-
-    game.canvas.addEventListener("mousedown", function() {
-      game.input.mouse.requestPointerLock();
-    });
+    this.physics.add.collider(
+      this.hand,
+      this.bombs,
+      this.handleCollision.bind(this)
+    );
 
     this.input.keyboard.on(
       "keydown_Q",
@@ -41,29 +49,13 @@ class Scene1 extends Phaser.Scene {
       0,
       this
     );
-
-    // Move reticle upon locked pointer move
-    // this.input.on(
-    //   "pointermove",
-    //   function(pointer) {
-    //     if (this.input.mouse.locked) {
-    //       this.hand.x += pointer.movementX;
-    //     }
-    //   },
-    //   this
-    // );
-
-    // this.input.addMoveCallback(
-    //   function(pointer) {
-    //     if (this.input.mouse.locked) {
-    //       // this works great on comp but cant work out how to do mobile touch
-    //       this.hand.x += pointer.movementX;
-    //     } else {
-    //       this.hand.x = pointer.screenX + 200;
-    //     }
-    //     console.log(pointer);
-    //   }.bind(this)
-    // );
+    this.input.on(
+      "pointerdown",
+      function() {
+        game.input.mouse.requestPointerLock();
+      },
+      this
+    );
 
     this.input.on(
       "pointermove",
@@ -76,22 +68,33 @@ class Scene1 extends Phaser.Scene {
       },
       this
     );
+
     this.time.addEvent({
       delay: 2000, // ms
       callback: this.fireOrb,
       callbackScope: this,
       loop: true
     });
+
     this.time.addEvent({
-      delay: 4000, // ms
-      callback: this.fireBomb,
-      callbackScope: this,
-      loop: true
+      delay: 10000, // ms
+      callback: this.fireBomb.bind(this)
+    });
+    this.time.addEvent({
+      delay: 20000, // ms
+      callback: this.fireMoreOrbs.bind(this)
+    });
+  }
+  fireMoreOrbs() {
+    this.fireOrb();
+    this.time.addEvent({
+      delay: Phaser.Math.Between(500, 3000), // ms
+      callback: this.fireMoreOrbs.bind(this)
     });
   }
 
   fireOrb() {
-    // Get bullet from bullets group
+    this.displayMiddle.innerHTML = `<img src="assets/orb-1.png"/>`;
     var orb = this.orbs
       .get()
       .setActive(true)
@@ -99,12 +102,10 @@ class Scene1 extends Phaser.Scene {
 
     if (orb) {
       orb.fire();
-      // Add collider between bullet and player
-      //   this.physics.add.collider(this.hand, orb, this.handleCollision);
     }
   }
   fireBomb() {
-    // Get bullet from bullets group
+    this.displayMiddle.innerHTML = `<img src="assets/bomb-1.png"/>`;
     var bomb = this.bombs
       .get()
       .setActive(true)
@@ -112,11 +113,42 @@ class Scene1 extends Phaser.Scene {
 
     if (bomb) {
       bomb.fire();
-      // Add collider between bullet and player
-      //   this.physics.add.collider(this.hand, orb, this.handleCollision);
+    }
+    this.time.addEvent({
+      delay: Phaser.Math.Between(1000, 7000), // ms
+      callback: this.fireBomb.bind(this)
+    });
+  }
+  handleCollision(hand, object) {
+    if (object instanceof Orb) {
+      const distance = Math.abs(
+        this.hand.x - this.hand.width / 2 + object.width - object.x
+      );
+      if (distance < 30 && distance > 0) {
+        object.setActive(false).setVisible(false);
+        this.updateScore(1);
+        return;
+      }
+      object.setVelocityX(
+        object.x < this.game.canvas.width / 2
+          ? Phaser.Math.Between(-100, -50)
+          : Phaser.Math.Between(100, 50)
+      );
+      return;
+    }
+    if (object instanceof Bomb) {
+      object.emitter.setPosition(500, -100);
+      object.destroy();
+      this.updateScore(-5);
     }
   }
-  handleCollision(e) {
-    console.log("hit");
+  updateScore(amount) {
+    this.score += amount;
+    if (this.score < 0) {
+      this.score = 0;
+    }
+    let stringScore = `${this.score}`;
+    let zeros = new Array(6 - stringScore.length).fill("0").join("");
+    this.displayTop.innerHTML = zeros + stringScore;
   }
 }

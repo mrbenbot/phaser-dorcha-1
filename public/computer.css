@@ -1,0 +1,102 @@
+@font-face {
+  font-family: "pix M 8pt";
+  src: url("fonts/MyFont.woff2") format("woff2"),
+    url("fonts/MyFont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+:root {
+  --font-family: "pix M 8pt";
+}
+
+body {
+  font-family: var(--font-family);
+  padding: 0;
+  margin: 0;
+  background-color: grey;
+  color: #1565c0;
+}
+main {
+  display: flex;
+  padding-top: 10vh;
+  padding-bottom: 21vh;
+  height: 100vh;
+  justify-content: space-evenly;
+  box-sizing: border-box;
+}
+.display-section {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+.display-section > * {
+  background-color: black;
+  margin: 0;
+}
+.score {
+  --font-spacing: 10px;
+  --padding-end: 30px;
+  font-size: 2em;
+  align-self: center;
+  letter-spacing: var(--font-spacing);
+  padding: 3px calc(var(--padding-end) - var(--font-spacing)) 3px
+    var(--padding-end);
+  text-align: center;
+}
+.bomb-monitor {
+  --size: 128px;
+  width: var(--size);
+  height: var(--size);
+  align-self: center;
+  text-align: center;
+  padding: 4%;
+  box-sizing: border-box;
+}
+.bomb-monitor > * {
+  height: 100%;
+}
+.message-board {
+  padding: 10px;
+  max-width: 30vw;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+}
+
+.pink-outline {
+  border: 5px solid fuchsia;
+  box-shadow: 0px 0px 5px 1px pink;
+}
+
+#phaser-root > canvas {
+  border: 5px solid fuchsia;
+  box-shadow: 0px 0px 5px 1px pink;
+}
+
+.wrapper-frame {
+  height: 100vh;
+  background-image: url(/assets/frame.png);
+  background-size: 100% 100%;
+}
+
+.wrapper-stars {
+  height: 100vh;
+  background-image: url(/assets/stars_tile.jpg);
+  background-size: 10%;
+}
+
+.bomb-monitor > img {
+  animation: spin 10s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
