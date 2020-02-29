@@ -1,14 +1,15 @@
 class Intro extends Phaser.Scene {
   constructor() {
     super("intro");
-    this.counter = 3;
+    this.counter = 5;
   }
   preload() {
     this.load.audio("music", "assets/music.mp3");
+    this.load.video("orb_spin", "assets/orb_spin.mp4");
   }
+
   countDown() {
     if (this.counter > 0) {
-      this.text.text = this.counter;
       this.displayMiddle.innerHTML = `<h1>${this.counter}</h1>`;
       this.counter--;
       return;
@@ -16,31 +17,25 @@ class Intro extends Phaser.Scene {
     this.displayMiddle.innerHTML = `<img src="assets/orb-1.png"/>`;
     this.scene.start("Scene-1");
   }
-
   create() {
-    var music = this.sound.add("music");
-
-    this.text = this.add.text(
-      100,
-      this.game.canvas.height + 20,
-      "CLICK HERE TO START GAME!!"
-    );
     this.displayMiddle = document.querySelector(".display-middle");
-    this.tweens.add({
-      targets: this.text,
-      x: this.game.canvas.width / 4,
-      y: this.game.canvas.height / 2,
-      duration: 2000,
-      ease: "Elastic",
-      easeParams: [1.5, 0.5]
-    });
+
+    this.music = this.sound.add("music");
+    this.video = this.add.video(
+      this.game.canvas.width / 2,
+      this.game.canvas.height / 2,
+      "orb_spin"
+    );
+
+    this.video.setScale(0.3);
 
     this.input.on(
       "pointerdown",
       function() {
-        music.play();
+        this.video.play(true);
+        this.music.play();
         game.input.mouse.requestPointerLock();
-        this.countDown();
+        this.countDown.bind(this);
         this.time.addEvent({
           delay: 1000, // ms
           callback: this.countDown,

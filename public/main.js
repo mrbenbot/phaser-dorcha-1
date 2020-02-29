@@ -3,8 +3,9 @@ const rootDiv = document.querySelector("#phaser-root");
 var config = {
   type: Phaser.AUTO,
   scale: {
+    mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
     parent: rootDiv,
-    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
     width: 400,
     height: 600
   },

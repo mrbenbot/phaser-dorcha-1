@@ -9,28 +9,23 @@
     <link href="computer.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <div class="wrapper-stars">
-      <div class="wrapper-frame">
-        <main>
-          <div class="container">
-            <div id="phaser-root"></div>
+    <video autoplay muted loop id="stars-video">
+      <source src="assets/star_background.mp4" type="video/mp4" />
+    </video>
+    <div class="wrapper-frame">
+      <main>
+        <div class="container">
+          <p class="score-display">00000</p>
+          <div id="phaser-root"></div>
+        </div>
+        <section class="display-section">
+          <div class="pink-outline score display-top">00:00</div>
+          <div class="pink-outline bomb-monitor display-middle"></div>
+          <div class="pink-outline message-board display-bottom">
+            <button>PLAY</button>
           </div>
-          <section class="display-section">
-            <div class="pink-outline score display-top">000000</div>
-            <div class="pink-outline bomb-monitor display-middle"></div>
-            <div class="pink-outline message-board display-bottom">
-              <p>Catch as many orbs as you can.</p>
-              <p>
-                watch out for duds, more than one is too much for these delicate
-                fingers.
-              </p>
-              <p>
-                times ticking
-              </p>
-            </div>
-          </section>
-        </main>
-      </div>
+        </section>
+      </main>
     </div>
     <script src="intro.js"></script>
     <script src="scene-1.js"></script>

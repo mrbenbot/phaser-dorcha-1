@@ -8,6 +8,9 @@
 :root {
   --font-family: "pix M 8pt";
 }
+html {
+  background-color: black;
+}
 
 body {
   font-family: var(--font-family);
@@ -16,11 +19,15 @@ body {
   background-color: grey;
   color: #1565c0;
 }
+.shudder {
+  animation: wobble-hor-bottom 0.8s both;
+}
 main {
   display: flex;
   padding-top: 10vh;
   padding-bottom: 21vh;
   height: 100vh;
+  width: 100vw;
   justify-content: space-evenly;
   box-sizing: border-box;
 }
@@ -29,6 +36,8 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  --child-width: 200px;
+  box-sizing: border-box;
 }
 .display-section > * {
   background-color: black;
@@ -45,47 +54,76 @@ main {
   text-align: center;
 }
 .bomb-monitor {
-  --size: 128px;
-  width: var(--size);
-  height: var(--size);
+  width: var(--child-width);
+  height: calc(var(--child-width) / 1.5);
   align-self: center;
   text-align: center;
   padding: 4%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .bomb-monitor > * {
-  height: 100%;
+  height: 50%;
 }
+
 .message-board {
-  padding: 10px;
-  max-width: 30vw;
+  width: var(--child-width);
+  height: calc(var(--child-width) / 1.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+.message-board > button {
+  font-size: 2em;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+  border: 0;
+}
+
 .container {
   display: flex;
   justify-content: center;
   z-index: 100;
+  position: relative;
+}
+.score-display {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .pink-outline {
-  border: 5px solid fuchsia;
-  box-shadow: 0px 0px 5px 1px pink;
+  border: 3px solid fuchsia;
+  box-shadow: 0px 0px 6px 2px magenta, inset 0 0 6px 2px magenta;
+  border-radius: 10px;
 }
 
-#phaser-root > canvas {
-  border: 5px solid fuchsia;
-  box-shadow: 0px 0px 5px 1px pink;
+#phaser-root {
+  border: 3px solid fuchsia;
+  box-shadow: 0px 0px 6px 2px magenta, inset 0 0 6px 2px magenta;
+  border-radius: 10px;
+  height: 50vh;
 }
 
 .wrapper-frame {
+  position: fixed;
   height: 100vh;
   background-image: url(/assets/frame.png);
   background-size: 100% 100%;
+  z-index: 0;
 }
-
-.wrapper-stars {
-  height: 100vh;
-  background-image: url(/assets/stars_tile.jpg);
-  background-size: 10%;
+#stars-video {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  z-index: 0;
 }
 
 .bomb-monitor > img {
@@ -98,5 +136,28 @@ main {
   }
   to {
     transform: rotate(359deg);
+  }
+}
+
+@keyframes wobble-hor-bottom {
+  0%,
+  100% {
+    transform: translateX(0%);
+    transform-origin: 50% 50%;
+  }
+  15% {
+    transform: translateX(-30px) rotate(-6deg);
+  }
+  30% {
+    transform: translateX(15px) rotate(6deg);
+  }
+  45% {
+    transform: translateX(-15px) rotate(-3.6deg);
+  }
+  60% {
+    transform: translateX(9px) rotate(2.4deg);
+  }
+  75% {
+    transform: translateX(-6px) rotate(-1.2deg);
   }
 }

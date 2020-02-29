@@ -2,6 +2,7 @@ class Scene1 extends Phaser.Scene {
   constructor() {
     super({ key: "Scene-1" });
     this.score = 0;
+    this.secondsLeft = 112;
   }
 
   preload() {
@@ -14,19 +15,21 @@ class Scene1 extends Phaser.Scene {
     // this.physics.world.setBounds(0, 0, 400, 600);
     this.displayTop = document.querySelector(".display-top");
     this.displayMiddle = document.querySelector(".display-middle");
+    this.wrapper = document.querySelector(".wrapper-frame");
     this.hand = this.physics.add.image(200, 500, "hand");
     this.hand.body.immovable = true;
     this.hand.body.moves = false;
     this.hand.allowGravity = false;
-
     this.orbs = this.physics.add.group({
       classType: Orb,
       collideWorldBounds: true,
       velocityY: 500
+      // maxSize: 3
     });
 
     this.bombs = this.physics.add.group({
       classType: Bomb
+      // maxSize: 3
     });
 
     this.physics.add.collider(
@@ -34,6 +37,7 @@ class Scene1 extends Phaser.Scene {
       this.orbs,
       this.handleCollision.bind(this)
     );
+    this.physics.add.collider(this.orbs);
 
     this.physics.add.collider(
       this.hand,
@@ -84,6 +88,11 @@ class Scene1 extends Phaser.Scene {
       delay: 20000, // ms
       callback: this.fireMoreOrbs.bind(this)
     });
+    this.time.addEvent({
+      delay: 1000, // ms
+      callback: this.countdownTimer.bind(this),
+      loop: true
+    });
   }
   fireMoreOrbs() {
     this.fireOrb();
@@ -95,12 +104,10 @@ class Scene1 extends Phaser.Scene {
 
   fireOrb() {
     this.displayMiddle.innerHTML = `<img src="assets/orb-1.png"/>`;
-    var orb = this.orbs
-      .get()
-      .setActive(true)
-      .setVisible(true);
+    var orb = this.orbs.get();
 
     if (orb) {
+      orb.setActive(true).setVisible(true);
       orb.fire();
     }
   }
@@ -137,18 +144,30 @@ class Scene1 extends Phaser.Scene {
       return;
     }
     if (object instanceof Bomb) {
+      this.wrapper.classList.add("shudder");
+      setTimeout(() => {
+        this.wrapper.classList.remove("shudder");
+      }, 1000);
       object.emitter.setPosition(500, -100);
       object.destroy();
       this.updateScore(-5);
     }
+  }
+  countdownTimer() {
+    this.secondsLeft--;
+    const seconds = this.secondsLeft % 60;
+    const minutes = Math.floor(this.secondsLeft / 60);
+    this.displayTop.innerHTML = `0${minutes}:${
+      seconds < 10 ? "0" : ""
+    }${seconds}`;
   }
   updateScore(amount) {
     this.score += amount;
     if (this.score < 0) {
       this.score = 0;
     }
-    let stringScore = `${this.score}`;
-    let zeros = new Array(6 - stringScore.length).fill("0").join("");
-    this.displayTop.innerHTML = zeros + stringScore;
+    // let stringScore = `${this.score}`;
+    // let zeros = new Array(6 - stringScore.length).fill("0").join("");
+    // this.displayTop.innerHTML = zeros + stringScore;
   }
 }
